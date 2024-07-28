@@ -78,9 +78,9 @@
             <input type="text" id="name" required>
             <label for="year">Year in Training:</label>
             <input type="text" id="year" required>
-            <label for="datesSeeking">Dates Seeking Coverage (comma separated):</label>
+            <label for="datesSeeking">Dates Seeking Coverage (comma separated, include ranges as "mm/dd/yyyy-mm/dd/yyyy"):</label>
             <textarea id="datesSeeking" required></textarea>
-            <label for="datesAvailable">Dates Available to Cover (comma separated):</label>
+            <label for="datesAvailable">Dates Available to Cover (comma separated, include ranges as "mm/dd/yyyy-mm/dd/yyyy"):</label>
             <textarea id="datesAvailable" required></textarea>
             <button type="button" onclick="submitForm()">Submit</button>
             <button type="button" onclick="clearEntries()">Clear Entries</button>
@@ -104,12 +104,35 @@
         </table>
     </div>
     <script>
+        function parseDates(datesInput) {
+            const dates = datesInput.split(',').map(date => date.trim());
+            const parsedDates = [];
+
+            dates.forEach(date => {
+                if (date.includes('-')) {
+                    const [start, end] = date.split('-').map(d => new Date(d.trim()));
+                    let currentDate = new Date(start);
+                    while (currentDate <= end) {
+                        parsedDates.push(currentDate.toISOString().split('T')[0]);
+                        currentDate.setDate(currentDate.getDate() + 1);
+                    }
+                } else {
+                    parsedDates.push(new Date(date).toISOString().split('T')[0]);
+                }
+            });
+
+            return parsedDates;
+        }
+
         async function submitForm() {
             console.log('Submit button clicked');
             const name = document.getElementById('name').value;
             const year = document.getElementById('year').value;
-            const datesSeeking = document.getElementById('datesSeeking').value.split(',').map(date => date.trim());
-            const datesAvailable = document.getElementById('datesAvailable').value.split(',').map(date => date.trim());
+            const datesSeekingInput = document.getElementById('datesSeeking').value;
+            const datesAvailableInput = document.getElementById('datesAvailable').value;
+
+            const datesSeeking = parseDates(datesSeekingInput);
+            const datesAvailable = parseDates(datesAvailableInput);
 
             const resident = {
                 name,
