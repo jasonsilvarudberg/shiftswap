@@ -47,13 +47,24 @@
         a:hover {
             text-decoration: underline;
         }
+        .loading {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <a href="index.html">Return to Form</a>
         <h1>Resident List</h1>
-        <table id="residentsTable">
+        <div class="loading" id="loading">Loading...</div>
+        <div class="error" id="error" style="display: none;">Error loading data. Please try again later.</div>
+        <table id="residentsTable" style="display: none;">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -68,25 +79,45 @@
     </div>
     <script>
         async function fetchResidents() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const table = document.getElementById('residentsTable');
+            const tableBody = document.getElementById('residentsTableBody');
+            
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            table.style.display = 'none';
+
             try {
                 const response = await fetch('https://shiftswap-backend.onrender.com/residents');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
                 const residents = await response.json();
 
-                const tableBody = document.getElementById('residentsTableBody');
                 tableBody.innerHTML = ''; // Clear existing rows
 
-                residents.forEach(resident => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${resident.name}</td>
-                        <td>${resident.year}</td>
-                        <td>${resident.datesSeeking.join(', ')}</td>
-                        <td>${resident.datesAvailable.join(', ')}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
+                if (residents.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4">No residents found</td></tr>';
+                } else {
+                    residents.forEach(resident => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${resident.name}</td>
+                            <td>${resident.year}</td>
+                            <td>${resident.datesSeeking.join(', ')}</td>
+                            <td>${resident.datesAvailable.join(', ')}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+
+                loading.style.display = 'none';
+                table.style.display = 'table';
             } catch (error) {
                 console.error('There was a problem with the fetch operation:', error);
+                loading.style.display = 'none';
+                error.style.display = 'block';
             }
         }
 
