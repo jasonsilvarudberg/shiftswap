@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident Shift Swap - All Residents</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .residents-table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .residents-table th, .residents-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .residents-table th {
+            background-color: #f2f2f2;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+            margin-top: 20px;
+            display: inline-block;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>All Residents</h1>
+        <table class="residents-table" id="residentsTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Year in Training</th>
+                    <th>Dates Seeking Coverage</th>
+                    <th>Dates Available to Cover</th>
+                </tr>
+            </thead>
+            <tbody id="residentsTableBody">
+            </tbody>
+        </table>
+        <a href="index.html">Back to Form</a>
+    </div>
+    <script>
+        async function fetchResidents() {
+            try {
+                const response = await fetch('https://shiftswap-backend.onrender.com/residents');
+                const residents = await response.json();
+
+                const tableBody = document.getElementById('residentsTableBody');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                residents.forEach(resident => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${resident.name}</td>
+                        <td>${resident.year}</td>
+                        <td>${resident.datesSeeking.join(', ')}</td>
+                        <td>${resident.datesAvailable.join(', ')}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                document.getElementById('residentsTable').style.display = 'table';
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        }
+
+        // Fetch residents when the page loads
+        window.onload = fetchResidents;
+    </script>
+</body>
+</html>
