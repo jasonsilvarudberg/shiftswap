@@ -59,9 +59,15 @@
         .match {
             margin-top: 20px;
             padding: 10px;
+            border-radius: 4px;
+        }
+        .match-found {
             background-color: #d4edda;
             border: 1px solid #c3e6cb;
-            border-radius: 4px;
+        }
+        .match-not-found {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
         }
     </style>
 </head>
@@ -84,7 +90,7 @@
         </form>
         <a href="residents.html">Show All Residents</a>
         <div id="matchResult" class="match" style="display:none;">
-            <h2>Match Found!</h2>
+            <h2 id="matchTitle"></h2>
             <p id="matchText"></p>
         </div>
     </div>
@@ -172,19 +178,26 @@
                 }
 
                 const matchResult = document.getElementById('matchResult');
+                const matchTitle = document.getElementById('matchTitle');
                 const matchText = document.getElementById('matchText');
 
                 if (match) {
+                    matchTitle.textContent = 'Match Found!';
                     matchText.innerHTML = `Match found with ${match.name} (${match.year})!<br>
                     Dates you can cover for them: ${newResident.datesAvailable.filter(date => match.datesSeeking.includes(date)).join(', ')}<br>
                     Dates they can cover for you: ${newResident.datesSeeking.filter(date => match.datesAvailable.includes(date)).join(', ')}`;
+                    matchResult.classList.remove('match-not-found');
+                    matchResult.classList.add('match-found');
                     matchResult.style.display = 'block';
                     
                     // Send email to both users
                     await sendEmail(newResident.email, `Match found with ${match.name} (${match.year})`);
                     await sendEmail(match.email, `Match found with ${newResident.name} (${newResident.year})`);
                 } else {
-                    matchText.innerHTML = 'No match found. Please try again later.';
+                    matchTitle.textContent = 'No Match Found!';
+                    matchText.textContent = 'No match found. Please try again later.';
+                    matchResult.classList.remove('match-found');
+                    matchResult.classList.add('match-not-found');
                     matchResult.style.display = 'block';
                 }
             } catch (error) {
