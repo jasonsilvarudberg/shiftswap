@@ -63,6 +63,10 @@
             border: 1px solid #c3e6cb;
             border-radius: 4px;
         }
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -81,6 +85,7 @@
             <button type="button" onclick="clearEntries()">Clear Entries</button>
         </form>
         <a href="residents.html">Show All Residents</a>
+        <div id="loading" class="loading">Processing...</div>
         <div id="matchResult" class="match" style="display:none;">
             <h2>Match Found!</h2>
             <p id="matchText"></p>
@@ -124,6 +129,9 @@
                 datesAvailable
             };
 
+            const loadingIndicator = document.getElementById('loading');
+            loadingIndicator.style.display = 'block';
+
             try {
                 const response = await fetch('https://shiftswap-backend.onrender.com/residents', {
                     method: 'POST',
@@ -144,10 +152,15 @@
                 findMatch(result);
             } catch (error) {
                 console.error('There was a problem with the fetch operation:', error);
+            } finally {
+                loadingIndicator.style.display = 'none';
             }
         }
 
         async function findMatch(newResident) {
+            const loadingIndicator = document.getElementById('loading');
+            loadingIndicator.style.display = 'block';
+
             try {
                 const response = await fetch('https://shiftswap-backend.onrender.com/residents');
                 const residents = await response.json();
@@ -181,12 +194,17 @@
                 }
             } catch (error) {
                 console.error('There was a problem with the fetch operation:', error);
+            } finally {
+                loadingIndicator.style.display = 'none';
             }
         }
 
         async function clearEntries() {
             console.log('Clear button clicked');
             const name = document.getElementById('name').value;
+
+            const loadingIndicator = document.getElementById('loading');
+            loadingIndicator.style.display = 'block';
 
             try {
                 const response = await fetch('https://shiftswap-backend.onrender.com/residents', {
@@ -208,6 +226,8 @@
                 alert('Entries cleared successfully');
             } catch (error) {
                 console.error('There was a problem with the fetch operation:', error);
+            } finally {
+                loadingIndicator.style.display = 'none';
             }
         }
     </script>
