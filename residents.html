@@ -59,7 +59,16 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="passwordContainer">
+        <h1>Password Required</h1>
+        <form id="passwordForm">
+            <label for="password">Enter Password:</label>
+            <input type="password" id="password" required>
+            <button type="button" onclick="checkPassword()">Submit</button>
+        </form>
+        <p id="errorMessage" style="color: red; display: none;">Incorrect password. Please try again.</p>
+    </div>
+    <div class="container" id="contentContainer" style="display: none;">
         <a href="index.html">Return to Form</a>
         <h1>Resident List</h1>
         <div class="loading" id="loading">Loading...</div>
@@ -78,6 +87,19 @@
         </table>
     </div>
     <script>
+        const PASSWORD = "becky-b";
+
+        function checkPassword() {
+            const enteredPassword = document.getElementById('password').value;
+            if (enteredPassword === PASSWORD) {
+                document.getElementById('passwordContainer').style.display = 'none';
+                document.getElementById('contentContainer').style.display = 'block';
+                fetchResidents(); // Fetch residents after password is verified
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        }
+
         async function fetchResidents() {
             const loading = document.getElementById('loading');
             const error = document.getElementById('error');
@@ -120,9 +142,6 @@
                 error.style.display = 'block';
             }
         }
-
-        // Fetch residents data when the page loads
-        window.onload = fetchResidents;
     </script>
 </body>
 </html>
