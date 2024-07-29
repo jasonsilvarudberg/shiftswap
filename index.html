@@ -184,7 +184,7 @@
                 const matchText = document.getElementById('matchText');
 
                 if (match) {
-                    matchText.innerHTML = `Match found with ${match.name} (${match.year})!<br>
+                    matchText.innerHTML = `Match found with ${match.name} (PGY-${match.year})!<br>
                     Dates you can cover for them: ${newResident.datesAvailable.filter(date => match.datesSeeking.includes(date)).join(', ')}<br>
                     Dates they can cover for you: ${newResident.datesSeeking.filter(date => match.datesAvailable.includes(date)).join(', ')}`;
                     matchResult.style.display = 'block';
