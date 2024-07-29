@@ -59,9 +59,15 @@
         .match {
             margin-top: 20px;
             padding: 10px;
+            border-radius: 4px;
+        }
+        .match.success {
             background-color: #d4edda;
             border: 1px solid #c3e6cb;
-            border-radius: 4px;
+        }
+        .match.failure {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
         }
         .loading {
             display: none;
@@ -87,7 +93,7 @@
         <a href="residents.html">Show All Residents</a>
         <div id="loading" class="loading">Processing...</div>
         <div id="matchResult" class="match" style="display:none;">
-            <h2>Match Found!</h2>
+            <h2 id="matchHeading"></h2>
             <p id="matchText"></p>
         </div>
     </div>
@@ -181,17 +187,20 @@
                 }
 
                 const matchResult = document.getElementById('matchResult');
+                const matchHeading = document.getElementById('matchHeading');
                 const matchText = document.getElementById('matchText');
 
                 if (match) {
-                    matchText.innerHTML = `Match found with ${match.name} (PGY-${match.year})!<br>
-                    Dates you can cover for them: ${newResident.datesAvailable.filter(date => match.datesSeeking.includes(date)).join(', ')}<br>
+                    matchHeading.textContent = 'Match Found!';
+                    matchText.innerHTML = `Dates you can cover for them: ${newResident.datesAvailable.filter(date => match.datesSeeking.includes(date)).join(', ')}<br>
                     Dates they can cover for you: ${newResident.datesSeeking.filter(date => match.datesAvailable.includes(date)).join(', ')}`;
-                    matchResult.style.display = 'block';
+                    matchResult.className = 'match success';
                 } else {
-                    matchText.innerHTML = 'No match found. Please try again later.';
-                    matchResult.style.display = 'block';
+                    matchHeading.textContent = 'No Match Found!';
+                    matchText.textContent = 'No match found. Please try again later.';
+                    matchResult.className = 'match failure';
                 }
+                matchResult.style.display = 'block';
             } catch (error) {
                 console.error('There was a problem with the fetch operation:', error);
             } finally {
