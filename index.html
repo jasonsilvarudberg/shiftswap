@@ -72,16 +72,7 @@
     </style>
 </head>
 <body>
-    <div class="container" id="passwordContainer">
-        <h1>Password Required</h1>
-        <form id="passwordForm">
-            <label for="password">Enter Password:</label>
-            <input type="password" id="password" required>
-            <button type="button" onclick="checkPassword()">Submit</button>
-        </form>
-        <p id="errorMessage" style="color: red; display: none;">Incorrect password. Please try again.</p>
-    </div>
-    <div class="container" id="contentContainer" style="display: none;">
+    <div class="container">
         <h1>Resident Shift Swap</h1>
         <form id="swapForm">
             <label for="name">Name:</label>
@@ -104,18 +95,6 @@
         </div>
     </div>
     <script>
-        const PASSWORD = "becky-b";
-
-        function checkPassword() {
-            const enteredPassword = document.getElementById('password').value;
-            if (enteredPassword === PASSWORD) {
-                document.getElementById('passwordContainer').style.display = 'none';
-                document.getElementById('contentContainer').style.display = 'block';
-            } else {
-                document.getElementById('errorMessage').style.display = 'block';
-            }
-        }
-
         function parseDates(datesInput) {
             const dates = datesInput.split(',').map(date => date.trim());
             const parsedDates = [];
