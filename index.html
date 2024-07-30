@@ -81,9 +81,9 @@
             <input type="email" id="email" required>
             <label for="year">Year in Training:</label>
             <input type="text" id="year" required>
-            <label for="datesSeeking">Dates Seeking Coverage (comma separated, include ranges as "mm/dd/yyyy-mm/dd/yyyy"):</label>
+            <label for="datesSeeking">Dates Seeking Coverage (comma separated, include ranges as "mm/dd/yyyy-mm/dd/yyyy", or individual dates):</label>
             <textarea id="datesSeeking" required></textarea>
-            <label for="datesAvailable">Dates Available to Cover (comma separated, include ranges as "mm/dd/yyyy-mm/dd/yyyy"):</label>
+            <label for="datesAvailable">Dates Available to Cover (comma separated, include ranges as "mm/dd/yyyy-mm/dd/yyyy", or individual dates):</label>
             <textarea id="datesAvailable" required></textarea>
             <button type="button" onclick="submitForm()">Submit</button>
             <button type="button" onclick="clearEntries()">Clear Entries</button>
@@ -183,7 +183,7 @@
 
                 if (match) {
                     matchTitle.textContent = 'Match Found!';
-                    matchText.innerHTML = `Match found with ${match.name} (${match.year})!<br>
+                    matchText.innerHTML = `Match found with ${match.name} (PGY-${match.year})!<br>
                     Dates you can cover for them: ${newResident.datesAvailable.filter(date => match.datesSeeking.includes(date)).join(', ')}<br>
                     Dates they can cover for you: ${newResident.datesSeeking.filter(date => match.datesAvailable.includes(date)).join(', ')}`;
                     matchResult.classList.remove('match-not-found');
@@ -191,7 +191,7 @@
                     matchResult.style.display = 'block';
                     
                     // Send email to both users
-                    await sendEmail(newResident.email, `Match found with ${match.name} (${match.year})!\nDates you can cover for them: ${newResident.datesAvailable.filter(date => match.datesSeeking.includes(date)).join(', ')}\nDates they can cover for you: ${newResident.datesSeeking.filter(date => match.datesAvailable.includes(date)).join(', ')}`);
+                    await sendEmail(newResident.email, `Match found with ${match.name} (PGY-${match.year})!\nDates you can cover for them: ${newResident.datesAvailable.filter(date => match.datesSeeking.includes(date)).join(', ')}\nDates they can cover for you: ${newResident.datesSeeking.filter(date => match.datesAvailable.includes(date)).join(', ')}`);
                     await sendEmail(match.email, `Match found with ${newResident.name} (${newResident.year})!\nDates you can cover for them: ${match.datesAvailable.filter(date => newResident.datesSeeking.includes(date)).join(', ')}\nDates they can cover for you: ${match.datesSeeking.filter(date => newResident.datesAvailable.includes(date)).join(', ')}`);
                 } else {
                     matchTitle.textContent = 'No Match Found!';
