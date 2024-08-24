@@ -69,6 +69,21 @@
             background-color: #f8d7da;
             border: 1px solid #f5c6cb;
         }
+        .spinner {
+            display: none;
+            margin-top: 20px;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 123, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
@@ -88,6 +103,7 @@
             <button type="button" onclick="submitForm()">Submit</button>
             <button type="button" onclick="clearEntries()">Clear Entries</button>
         </form>
+        <div class="spinner" id="loadingSpinner"></div>
         <a href="residents.html">Show All Residents</a>
         <div id="matchResult" class="match" style="display:none;">
             <h2 id="matchTitle"></h2>
@@ -95,6 +111,23 @@
         </div>
     </div>
     <script>
+        function validateForm() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const year = document.getElementById('year').value;
+            const datesSeeking = document.getElementById('datesSeeking').value;
+            const datesAvailable = document.getElementById('datesAvailable').value;
+
+            if (!name || !email || !year || !datesSeeking || !datesAvailable) {
+                alert('Please fill out all required fields.');
+                return false;
+            }
+
+            // Add any additional validation logic here
+
+            return true;
+        }
+
         function parseDates(datesInput) {
             const dates = datesInput.split(',').map(date => date.trim());
             const parsedDates = [];
@@ -116,25 +149,32 @@
         }
 
         async function submitForm() {
-            console.log('Submit button clicked');
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const year = document.getElementById('year').value;
-            const datesSeekingInput = document.getElementById('datesSeeking').value;
-            const datesAvailableInput = document.getElementById('datesAvailable').value;
+            if (!validateForm()) return;
 
-            const datesSeeking = parseDates(datesSeekingInput);
-            const datesAvailable = parseDates(datesAvailableInput);
-
-            const resident = {
-                name,
-                email,
-                year,
-                datesSeeking,
-                datesAvailable
-            };
+            const submitButton = document.querySelector('button[onclick="submitForm()"]');
+            const spinner = document.getElementById('loadingSpinner');
+            submitButton.disabled = true;
+            spinner.style.display = 'block';
 
             try {
+                console.log('Submit button clicked');
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const year = document.getElementById('year').value;
+                const datesSeekingInput = document.getElementById('datesSeeking').value;
+                const datesAvailableInput = document.getElementById('datesAvailable').value;
+
+                const datesSeeking = parseDates(datesSeekingInput);
+                const datesAvailable = parseDates(datesAvailableInput);
+
+                const resident = {
+                    name,
+                    email,
+                    year,
+                    datesSeeking,
+                    datesAvailable
+                };
+
                 const response = await fetch('https://shiftswap-backend.onrender.com/residents', {
                     method: 'POST',
                     headers: {
@@ -143,17 +183,18 @@
                     body: JSON.stringify(resident)
                 });
 
-                console.log('Fetch response:', response);
-
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
 
                 const result = await response.json();
-                console.log('Fetch result:', result);
                 findMatch(result);
             } catch (error) {
-                console.error('There was a problem with the fetch operation:', error);
+                console.error('There was a problem with the submit operation:', error);
+                alert('Failed to submit form. Please try again.');
+            } finally {
+                submitButton.disabled = false;
+                spinner.style.display = 'none';
             }
         }
 
